@@ -3,6 +3,12 @@ import express from 'express'
 import session from 'express-session'
 import sessionFileStore from 'session-file-store'
 
+declare module 'express-session' {
+  interface SessionData {
+    num?: number;
+  }
+}
+
 /**
  * express 인스턴스 설정
  */
