@@ -66,7 +66,7 @@ const isValidUser = (user: IUser) => true
 /**
  * 로그인
  */
-app.post('/login' , (req, res) => {
+app.post('/login', (req, res) => {
   const user = req.session?.user
   if (user) {
     return res.status(200).json({ message: 'loggedin' })
@@ -83,9 +83,16 @@ app.post('/login' , (req, res) => {
 })
 
 app.post('/logout', (req, res) => {
-  req.session.destroy(() => {
-    console.log('로그아웃 됨')
-  })
+  try {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error(err)
+      }
+      console.log('logout')
+    })
+  } catch (e) {
+    console.error(`logout error: ${e}`)
+  }
 
   return res.status(200).json({ message: 'logout' })
 })
