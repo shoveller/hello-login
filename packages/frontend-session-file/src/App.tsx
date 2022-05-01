@@ -2,7 +2,6 @@ import { useAtomValue } from 'jotai'
 import { ReactElement } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
-
 import { Switch } from './components/Switch'
 import { Home } from './pages/Home'
 import { Login } from './pages/Login'

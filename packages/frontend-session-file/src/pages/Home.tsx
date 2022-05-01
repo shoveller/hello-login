@@ -12,7 +12,7 @@ export const Home = () => {
       const values = new FormData(e.target as HTMLFormElement)
       const id = values.get('id')
       axios
-        .post('http://localhost:3000/logout', JSON.stringify({ id }))
+        .post('http://localhost:3000/logout', { id }, { withCredentials: true })
         .then(() => {
           logout()
         })

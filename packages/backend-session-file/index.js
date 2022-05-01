@@ -23,6 +23,7 @@ app.use(express.urlencoded({ extended: false }));
  */
 app.use(cors({
     origin: 'http://localhost:3000',
+    methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
     credentials: true
 }));
 /**
@@ -37,9 +38,9 @@ var oneMinute = oneSecond * 60;
  */
 app.use(session({
     secret: 'keyboard cat',
-    name: 'cat',
+    // name: 'cat', // 웹 브라우저에서의 세션 이름(default: connect.sid)
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     store: store,
     // 세션 쿠키 초기화
     cookie: {
@@ -63,36 +64,37 @@ var isValidUser = function (id, pass) {
  */
 app.post('/login', function (req, res) {
     var _a = req.body, id = _a.id, pass = _a.pass;
-    if (req.session.cookie) {
-        return res.status(200).json({ message: 'loggedin' });
-    }
+    console.log('req.sessionID', req.sessionID);
     if (!isValidUser(id, pass)) {
         return res.status(401).json({ message: 'error' });
     }
-    // 세션에 유저를 추가
-    // eslint-disable-next-line functional/immutable-data
-    req.session.user = {
-        id: id,
-        name: pass
-    };
+    // // 세션에 유저를 추가
+    // // eslint-disable-next-line functional/immutable-data
+    // req.session.user = {
+    //   id,
+    //   name: pass,
+    // }
+    req.session.save();
     return res.status(200).json({ message: 'login' });
 });
 app.post('/logout', function (req, res) {
-    console.log(req.session);
+    console.log('req.session', req.session);
     try {
         req.session.destroy(function (err) {
             if (err) {
                 console.error(err);
             }
-            console.log('logout');
         });
     }
     catch (e) {
         console.error("logout error: ".concat(e));
     }
+    // @ts-ignore
+    // eslint-disable-next-line functional/immutable-data
+    req.session = null;
     return res.status(200).json({ message: 'logout' });
 });
 /**
  * 서버 실행
  */
-app.listen(4000, function () { return console.log('started at 3000 port'); });
+app.listen(4000, function () { return console.log('started at 4000 port'); });

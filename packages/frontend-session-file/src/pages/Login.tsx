@@ -15,11 +15,17 @@ export const Login = () => {
       const id = values.get('id') as string
       const pass = values.get('pass') as string
 
-      axios
-        .post('http://localhost:4000/login', JSON.stringify({ id, pass }))
-        .then(() => {
-          login('true')
-        })
+      if (id && pass) {
+        axios
+          .post(
+            'http://localhost:4000/login',
+            { id, pass },
+            { withCredentials: true },
+          )
+          .then(() => {
+            login('true')
+          })
+      }
     },
     [login],
   )
