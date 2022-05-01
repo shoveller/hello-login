@@ -66,13 +66,11 @@ const isValidUser = (user: IUser) => true
 /**
  * 로그인
  */
-app.post('/login', (req, res) => {
+app.post('/login' , (req, res) => {
   const user = req.session?.user
   if (user) {
     return res.status(200).json({ message: 'loggedin' })
   }
-
-  console.log('req.body', req.body)
 
   // 세션에 유저를 추가
   // eslint-disable-next-line functional/immutable-data
@@ -84,7 +82,13 @@ app.post('/login', (req, res) => {
   return res.status(200).json({ message: 'login' })
 })
 
+app.post('/logout', (req, res) => {
+  // req.session.destroy(() => {
+  //   req.session
+  // })
+})
+
 /**
  * 서버 실행
  */
-app.listen(3000, () => console.log('started at 3000 port'))
+app.listen(4000, () => console.log('started at 3000 port'))
