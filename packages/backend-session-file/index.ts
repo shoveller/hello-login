@@ -83,9 +83,11 @@ app.post('/login' , (req, res) => {
 })
 
 app.post('/logout', (req, res) => {
-  // req.session.destroy(() => {
-  //   req.session
-  // })
+  req.session.destroy(() => {
+    console.log('로그아웃 됨')
+  })
+
+  return res.status(200).json({ message: 'logout' })
 })
 
 /**
