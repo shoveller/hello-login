@@ -1,0 +1,15 @@
+{
+  "cookie": {
+    "originalMaxAge": 60000,
+    "expires": "2022-04-19T22:31:28.331Z",
+    "secure": false,
+    "httpOnly": true,
+    "domain": "localhost",
+    "path": "/"
+  },
+  "user": {
+    "id": "cinos",
+    "name": "서재원"
+  },
+  "__lastAccess": 1650407428331
+}

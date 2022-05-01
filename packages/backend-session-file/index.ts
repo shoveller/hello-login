@@ -3,9 +3,14 @@ import express from 'express'
 import session from 'express-session'
 import sessionFileStore from 'session-file-store'
 
+interface IUser {
+  id: string
+  name: string
+}
+
 declare module 'express-session' {
   interface SessionData {
-    num?: number;
+    user?: IUser
   }
 }
 
@@ -18,6 +23,12 @@ const app = express()
  * 쿠키 파서 미들웨어 초기화
  */
 app.use(cookieParser())
+
+/**
+ * 바디 파서 미들웨어 초기화
+ */
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
 
 /**
  * 스토어 인스턴스 초기화
@@ -49,20 +60,28 @@ app.use(
   }),
 )
 
-/**
- * 라우터 초기화
- */
-app.get('/', (req, res) => {
-  console.log('세션 생성됨', req.sessionID, req.session)
-  const { num = 0 } = req.session
-  /**
-   * 세션을 보다 쉽게 구분할 수 있게 숫자 데이터를 추가해준다.
-   */
-  // eslint-disable-next-line functional/immutable-data
-  req.session.num = num + 1
-  const body = { num: req.session.num }
+// eslint-disable-next-line unused-imports/no-unused-vars
+const isValidUser = (user: IUser) => true
 
-  return res.json(body)
+/**
+ * 로그인
+ */
+app.post('/login', (req, res) => {
+  const user = req.session?.user
+  if (user) {
+    return res.status(200).json({ message: 'loggedin' })
+  }
+
+  console.log('req.body', req.body)
+
+  // 세션에 유저를 추가
+  // eslint-disable-next-line functional/immutable-data
+  req.session.user = {
+    id: 'cinos',
+    name: '서재원',
+  }
+
+  return res.status(200).json({ message: 'login' })
 })
 
 /**
