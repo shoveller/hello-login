@@ -1,4 +1,5 @@
 import cookieParser = require('cookie-parser')
+import cors = require('cors')
 import express = require('express')
 import session = require('express-session')
 import sessionFileStore = require('session-file-store')
@@ -14,8 +15,13 @@ declare module 'express-session' {
   }
 }
 
+interface IBody {
+  id: string
+  pass: string
+}
+
 /**
- * express 인스턴스 설정
+ * express 인스턴스 생성
  */
 const app = express()
 
@@ -29,6 +35,16 @@ app.use(cookieParser())
  */
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+
+/**
+ * 통신이 가능한 도메인을 추가
+ */
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }),
+)
 
 /**
  * 스토어 인스턴스 초기화
@@ -49,8 +65,8 @@ app.use(
     resave: false, // true로 설정하면, 값이 바뀌지 않더라도 새로저장
     saveUninitialized: true, // 접속후에 바로 세션을 생성하는가?
     store,
+    // 세션 쿠키 초기화
     cookie: {
-      // 클라이언트 쿠키
       path: '/', // 쿠키의 경로
       httpOnly: true, // 이 쿠키는 자바스크립트로 접근할 수 없는가?
       secure: false, // 브라우저에서 https로만 쿠키를 전송하는가?
@@ -60,37 +76,42 @@ app.use(
   }),
 )
 
-// eslint-disable-next-line unused-imports/no-unused-vars
-const isValidUser = (user: IUser) => true
+/**
+ *  사용자 인증
+ * @param id
+ * @param pass
+ */
+const isValidUser = (id: string, pass: string) => {
+  return id === 'a' && pass === 'a'
+}
 
 /**
  * 로그인
  */
 app.post('/login', (req, res) => {
-  console.log(req.body)
+  const { id, pass } = req.body as IBody
 
-  const user = req.session?.user
-  if (user) {
+  if (req.session.cookie) {
     return res.status(200).json({ message: 'loggedin' })
+  }
+
+  if (!isValidUser(id, pass)) {
+    return res.status(401).json({ message: 'error' })
   }
 
   // 세션에 유저를 추가
   // eslint-disable-next-line functional/immutable-data
   req.session.user = {
-    id: 'cinos',
-    name: '서재원',
+    id,
+    name: pass,
   }
-
-  // 로그인 정보를 클라이언트에 쿠키로 전달
-  res.cookie('user',{
-    id: req.session.user.id,
-    authorized : true
-  });
 
   return res.status(200).json({ message: 'login' })
 })
 
 app.post('/logout', (req, res) => {
+  console.log(req.session)
+
   try {
     req.session.destroy((err) => {
       if (err) {
