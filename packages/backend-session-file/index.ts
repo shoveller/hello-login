@@ -1,7 +1,7 @@
-import cookieParser from 'cookie-parser'
-import express from 'express'
-import session from 'express-session'
-import sessionFileStore from 'session-file-store'
+import cookieParser = require('cookie-parser')
+import express = require('express')
+import session = require('express-session')
+import sessionFileStore = require('session-file-store')
 
 interface IUser {
   id: string
@@ -67,6 +67,8 @@ const isValidUser = (user: IUser) => true
  * 로그인
  */
 app.post('/login', (req, res) => {
+  console.log(req.body)
+
   const user = req.session?.user
   if (user) {
     return res.status(200).json({ message: 'loggedin' })
@@ -78,6 +80,12 @@ app.post('/login', (req, res) => {
     id: 'cinos',
     name: '서재원',
   }
+
+  // 로그인 정보를 클라이언트에 쿠키로 전달
+  res.cookie('user',{
+    id: req.session.user.id,
+    authorized : true
+  });
 
   return res.status(200).json({ message: 'login' })
 })
